@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	client "github.com/andrewclowes/fresh8/apiutil"
+	"github.com/andrewclowes/fresh8/apiutil"
 )
 
 func setup() (client *Client, mux *http.ServeMux, serverURL string, teardown func()) {
@@ -58,7 +58,7 @@ func TestFootballService_GetEvent(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetEvent returned error: %v", err)
 	}
-	want := &Event{ID: client.Int(1), Name: client.String("A v B"), Time: client.Time(time.Date(2018, 4, 25, 12, 0, 0, 0, time.UTC)), Markets: &[]int{1, 2}}
+	want := &Event{ID: apiutil.Int(1), Name: apiutil.String("A v B"), Time: apiutil.Time(time.Date(2018, 4, 25, 12, 0, 0, 0, time.UTC)), Markets: &[]int{1, 2}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("GetEvent = %+v, want %+v", got, want)
 	}
@@ -81,7 +81,7 @@ func TestFootballService_GetMarket(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetMarket returned error: %v", err)
 	}
-	want := &Market{ID: client.String("1"), Type: client.String("win"), Options: &[]Option{Option{ID: client.String("1"), Name: client.String("win"), Odds: client.String("1/2")}}}
+	want := &Market{ID: apiutil.String("1"), Type: apiutil.String("win"), Options: &[]Option{Option{ID: apiutil.String("1"), Name: apiutil.String("win"), Odds: apiutil.String("1/2")}}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("GetMarket = %+v, want %+v", got, want)
 	}

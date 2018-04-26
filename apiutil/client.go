@@ -73,7 +73,13 @@ func (b *ClientBase) Do(ctx context.Context, req *http.Request, v interface{}) (
 	defer resp.Body.Close()
 	err = checkResponse(resp)
 	if v != nil {
-		err = json.NewDecoder(resp.Body).Decode(v)
+		decErr := json.NewDecoder(resp.Body).Decode(v)
+		if decErr == io.EOF {
+			decErr = nil
+		}
+		if decErr != nil {
+			err = decErr
+		}
 	}
 	return resp, err
 }
