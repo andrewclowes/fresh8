@@ -2,11 +2,11 @@ package feed
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/andrewclowes/fresh8/apiutil"
 )
@@ -36,7 +36,7 @@ func TestFootballService_ListEventIds(t *testing.T) {
 	if err != nil {
 		t.Errorf("ListEventIds returned error: %v", err)
 	}
-	if want := &[]int{1, 2, 3}; !reflect.DeepEqual(got, want) {
+	if want := []json.Number{"1", "2", "3"}; !reflect.DeepEqual(got, want) {
 		t.Errorf("ListEventIds = %+v, want %+v", got, want)
 	}
 }
@@ -58,7 +58,7 @@ func TestFootballService_GetEvent(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetEvent returned error: %v", err)
 	}
-	want := &Event{ID: apiutil.Int(1), Name: apiutil.String("A v B"), Time: apiutil.Time(time.Date(2018, 4, 25, 12, 0, 0, 0, time.UTC)), Markets: &[]int{1, 2}}
+	want := &Event{ID: apiutil.JSONNumber("1"), Name: apiutil.String("A v B"), Time: apiutil.String("2018-04-25T12:00:00Z"), Markets: &[]json.Number{"1", "2"}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("GetEvent = %+v, want %+v", got, want)
 	}
@@ -81,7 +81,7 @@ func TestFootballService_GetMarket(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetMarket returned error: %v", err)
 	}
-	want := &Market{ID: apiutil.String("1"), Type: apiutil.String("win"), Options: &[]Option{Option{ID: apiutil.String("1"), Name: apiutil.String("win"), Odds: apiutil.String("1/2")}}}
+	want := &Market{ID: apiutil.JSONNumber("1"), Type: apiutil.String("win"), Options: &[]Option{Option{ID: apiutil.JSONNumber("1"), Name: apiutil.String("win"), Odds: apiutil.String("1/2")}}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("GetMarket = %+v, want %+v", got, want)
 	}

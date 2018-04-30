@@ -3,14 +3,15 @@ package store
 import (
 	"context"
 	"net/http"
+	"time"
 )
 
 // Event represents an event from the store
 type Event struct {
-	ID      string   `json:"id"`
-	Name    string   `json:"name"`
-	Time    string   `json:"time"`
-	Markets []Market `json:"markets"`
+	ID      string    `json:"id"`
+	Name    string    `json:"name"`
+	Time    time.Time `json:"time"`
+	Markets []Market  `json:"markets"`
 }
 
 // Market represents a market from the store

@@ -1,0 +1,3 @@
+https://github.com/fresh8/f8-feeds-challenge/tree/master/feed
+https://medium.com/@marcus.olsson/writing-a-go-client-for-your-restful-api-c193a2f4998c
+https://github.com/google/go-github

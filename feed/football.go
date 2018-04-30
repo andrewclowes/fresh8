@@ -2,31 +2,31 @@ package feed
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 )
 
 // Event represents an event from the feed
 type Event struct {
-	ID      *int       `json:"id,omitempty"`
-	Name    *string    `json:"name,omitempty"`
-	Time    *time.Time `json:"time,omitempty"`
-	Markets *[]int     `json:"markets,omitempty"`
+	ID      *json.Number   `json:"id,omitempty"`
+	Name    *string        `json:"name,omitempty"`
+	Time    *string        `json:"time,omitempty"`
+	Markets *[]json.Number `json:"markets,omitempty"`
 }
 
 // Option represents a set of options for a market
 type Option struct {
-	ID   *string `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
-	Odds *string `json:"odds,omitempty"`
+	ID   *json.Number `json:"id,omitempty"`
+	Name *string      `json:"name,omitempty"`
+	Odds *string      `json:"odds,omitempty"`
 }
 
 // Market represents a market from the feed
 type Market struct {
-	ID      *string   `json:"id,omitempty"`
-	Type    *string   `json:"type,omitempty"`
-	Options *[]Option `json:"options,omitempty"`
+	ID      *json.Number `json:"id,omitempty"`
+	Type    *string      `json:"type,omitempty"`
+	Options *[]Option    `json:"options,omitempty"`
 }
 
 // FootballService handles communication with the Football related data
@@ -35,17 +35,17 @@ type FootballService struct {
 }
 
 // ListEventIds lists the event IDs
-func (s *FootballService) ListEventIds(ctx context.Context) (*[]int, *http.Response, error) {
+func (s *FootballService) ListEventIds(ctx context.Context) ([]json.Number, *http.Response, error) {
 	req, err := s.client.NewRequest("GET", "football/events", nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	i := new([]int)
+	i := new([]json.Number)
 	resp, err := s.client.Do(ctx, req, i)
 	if err != nil {
 		return nil, nil, err
 	}
-	return i, resp, nil
+	return *i, resp, nil
 }
 
 // GetEvent gets the event for a given id
