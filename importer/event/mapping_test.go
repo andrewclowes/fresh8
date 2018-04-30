@@ -42,7 +42,7 @@ func TestMarketMapper(t *testing.T) {
 	input := &feed.Market{
 		ID:   apiutil.JSONNumber("1"),
 		Type: apiutil.String("win"),
-		Options: &[]feed.Option{
+		Options: &feed.Options{
 			feed.Option{
 				ID:   apiutil.JSONNumber("1"),
 				Name: apiutil.String("win"),

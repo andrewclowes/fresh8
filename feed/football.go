@@ -15,18 +15,37 @@ type Event struct {
 	Markets *[]json.Number `json:"markets,omitempty"`
 }
 
-// Option represents a set of options for a market
+// Market represents a market from the feed
+type Market struct {
+	ID      *json.Number `json:"id,omitempty"`
+	Type    *string      `json:"type,omitempty"`
+	Options *Options     `json:"options,omitempty"`
+}
+
+// Option represents an option for a market
 type Option struct {
 	ID   *json.Number `json:"id,omitempty"`
 	Name *string      `json:"name,omitempty"`
 	Odds *string      `json:"odds,omitempty"`
 }
 
-// Market represents a market from the feed
-type Market struct {
-	ID      *json.Number `json:"id,omitempty"`
-	Type    *string      `json:"type,omitempty"`
-	Options *[]Option    `json:"options,omitempty"`
+// Options represents a set of options for a market
+type Options []Option
+
+// UnmarshalJSON handles single or multiple options and unmarshals
+// both as a slice
+func (o *Options) UnmarshalJSON(data []byte) error {
+	var opt Option
+	if err := json.Unmarshal(data, &opt); err == nil {
+		*o = append(*o, opt)
+		return nil
+	}
+	var opts []Option
+	if err := json.Unmarshal(data, &opts); err != nil {
+		return err
+	}
+	*o = opts
+	return nil
 }
 
 // FootballService handles communication with the Football related data

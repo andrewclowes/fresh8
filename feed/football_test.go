@@ -64,7 +64,30 @@ func TestFootballService_GetEvent(t *testing.T) {
 	}
 }
 
-func TestFootballService_GetMarket(t *testing.T) {
+func TestFootballService_GetMarket_SingleOption(t *testing.T) {
+	feedClient, mux, _, teardown := setup()
+	defer teardown()
+
+	mux.HandleFunc("/football/markets/1", func(w http.ResponseWriter, r *http.Request) {
+		if got, want := r.Method, "GET"; got != want {
+			t.Errorf("Request method: %v, want %v", got, want)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"id":"1","type":"win","options":{"id":"1","name":"win","odds":"1/2"}}`))
+	})
+
+	got, _, err := feedClient.Football.GetMarket(context.Background(), 1)
+	if err != nil {
+		t.Errorf("GetMarket returned error: %v", err)
+	}
+	want := &Market{ID: apiutil.JSONNumber("1"), Type: apiutil.String("win"), Options: &Options{Option{ID: apiutil.JSONNumber("1"), Name: apiutil.String("win"), Odds: apiutil.String("1/2")}}}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("GetMarket = %+v, want %+v", got, want)
+	}
+}
+
+func TestFootballService_GetMarket_MultipleOptions(t *testing.T) {
 	feedClient, mux, _, teardown := setup()
 	defer teardown()
 
@@ -81,7 +104,7 @@ func TestFootballService_GetMarket(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetMarket returned error: %v", err)
 	}
-	want := &Market{ID: apiutil.JSONNumber("1"), Type: apiutil.String("win"), Options: &[]Option{Option{ID: apiutil.JSONNumber("1"), Name: apiutil.String("win"), Odds: apiutil.String("1/2")}}}
+	want := &Market{ID: apiutil.JSONNumber("1"), Type: apiutil.String("win"), Options: &Options{Option{ID: apiutil.JSONNumber("1"), Name: apiutil.String("win"), Odds: apiutil.String("1/2")}}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("GetMarket = %+v, want %+v", got, want)
 	}
