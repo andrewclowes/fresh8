@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 )
 
 func setup() (client *Client, mux *http.ServeMux, serverURL string, teardown func()) {
@@ -21,7 +22,7 @@ func TestEventService_Create(t *testing.T) {
 	storeClient, mux, _, teardown := setup()
 	defer teardown()
 
-	input := &Event{ID: "1", Name: "Test", Time: "2018-04-25T12:00:00Z00:00", Markets: []Market{Market{ID: "1", Type: "Win", Options: []Option{Option{ID: "1", Name: "Win", Num: 1, Den: 2}}}}}
+	input := &Event{ID: "1", Name: "Test", Time: time.Date(2018, 4, 25, 12, 0, 0, 0, time.UTC), Markets: []Market{Market{ID: "1", Type: "Win", Options: []Option{Option{ID: "1", Name: "Win", Num: 1, Den: 2}}}}}
 
 	mux.HandleFunc("/event", func(w http.ResponseWriter, r *http.Request) {
 		v := new(Event)

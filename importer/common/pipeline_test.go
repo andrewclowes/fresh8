@@ -38,7 +38,7 @@ func TestPipeline(t *testing.T) {
 }
 
 func adder(x int) Step {
-	return Step(func(in <-chan interface{}, out chan interface{}, errc <-chan error) {
+	return Step(func(in <-chan interface{}, out chan interface{}, errc chan<- error) {
 		for m := range in {
 			n := m.(int)
 			out <- (int(n) + x)
@@ -47,7 +47,7 @@ func adder(x int) Step {
 }
 
 func multiplier(x int) Step {
-	return Step(func(in <-chan interface{}, out chan interface{}, errc <-chan error) {
+	return Step(func(in <-chan interface{}, out chan interface{}, errc chan<- error) {
 		for m := range in {
 			n := m.(int)
 			out <- (int(n) * x)

@@ -13,7 +13,7 @@ import (
 	"github.com/andrewclowes/fresh8/store"
 )
 
-func newGetEventIdsStep(football common.FootballService) common.Step {
+func newGetEventIdsStep(football common.FootballEventIdsService) common.Step {
 	return common.Step(func(in <-chan interface{}, out chan interface{}, errc chan<- error) {
 		ids, _, err := football.ListEventIds(context.Background())
 		if err != nil {
@@ -27,7 +27,7 @@ func newGetEventIdsStep(football common.FootballService) common.Step {
 	})
 }
 
-func newGetEventStep(football common.FootballService, mapEvent eventMapper) common.StepHandler {
+func newGetEventStep(football common.FootballEventService, mapEvent eventMapper) common.StepHandler {
 	return func(in interface{}, errc chan<- error) interface{} {
 		n, ok := in.(json.Number)
 		if !ok {
@@ -52,7 +52,7 @@ func newGetEventStep(football common.FootballService, mapEvent eventMapper) comm
 	}
 }
 
-func newGetMarketsStep(football common.FootballService, mapMarket marketMapper) common.StepHandler {
+func newGetMarketsStep(football common.FootballMarketService, mapMarket marketMapper) common.StepHandler {
 	return func(in interface{}, errc chan<- error) interface{} {
 		event, ok := in.(*store.Event)
 		if !ok {
@@ -95,7 +95,7 @@ func newGetMarketsStep(football common.FootballService, mapMarket marketMapper) 
 	}
 }
 
-func newStoreSendStep(eventStore common.StoreService) common.StepHandler {
+func newStoreSendStep(eventStore common.StoreEventService) common.StepHandler {
 	return func(in interface{}, errc chan<- error) interface{} {
 		event, ok := in.(*store.Event)
 		if !ok {
