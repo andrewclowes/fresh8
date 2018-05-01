@@ -28,6 +28,15 @@ type ConcurrentStep struct {
 	handle StepHandler
 }
 
+// NewConcurrentStep creates a pipeline step in which items
+// are processed concurrently
+func NewConcurrentStep(handler StepHandler) StepRunner {
+	step := &ConcurrentStep{
+		handle: handler,
+	}
+	return step
+}
+
 // Run takes an input channel, and a series of operators, and uses the output
 // of each successive operator as the input for the next
 func (s ConcurrentStep) Run(in <-chan interface{}) chan interface{} {
@@ -104,4 +113,32 @@ func (s Steps) Run(in chan interface{}) chan interface{} {
 		in = m.Run(in)
 	}
 	return in
+}
+
+// PipelineJob is a job that runs a chainable series of steps
+type PipelineJob struct {
+	steps *Steps
+}
+
+// NewPipelineJob creates a new pipeline job for a series of steps
+func NewPipelineJob(steps *Steps) Job {
+	job := &PipelineJob{
+		steps: steps,
+	}
+	return job
+}
+
+// Run starts the job and will wait untilall steps to finish
+// before returning
+func (j *PipelineJob) Run() {
+	out := j.steps.Run(nil)
+loop:
+	for {
+		select {
+		case _, ok := <-out:
+			if !ok {
+				break loop
+			}
+		}
+	}
 }

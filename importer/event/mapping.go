@@ -9,29 +9,6 @@ import (
 	"github.com/andrewclowes/fresh8/store"
 )
 
-// // Event represents an event from the feed
-// type Event struct {
-// 	ID      string
-// 	Name    string
-// 	Time    time.Time
-// 	Markets []Market
-// }
-
-// // Option represents a set of options for a market
-// type Option struct {
-// 	ID   string
-// 	Name string
-// 	Num  int
-// 	Den  int
-// }
-
-// // Market represents a market from the feed
-// type Market struct {
-// 	ID      string
-// 	Type    string
-// 	Options []Option
-// }
-
 type errorCollector []error
 
 func (m *errorCollector) Collect(err error) {

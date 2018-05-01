@@ -1,16 +1,23 @@
 package main
 
 import (
-	"log"
+	"net/http"
+	"time"
 
+	"github.com/andrewclowes/fresh8/feed"
+	"github.com/andrewclowes/fresh8/importer/common"
 	"github.com/andrewclowes/fresh8/importer/event"
+	"github.com/andrewclowes/fresh8/store"
 )
 
 func main() {
-	p := event.NewPipeline()
-	in := p.Run(nil)
-	for r := range in {
-		log.Println(r)
+	netClient := &http.Client{
+		Timeout: time.Second * 10,
 	}
-	log.Println("End")
+	feed, _ := feed.NewClient("http://localhost:8000", netClient)
+	store, _ := store.NewClient("http://localhost:8001", netClient)
+
+	s := event.NewPipeline(feed.Football, store.Event)
+	p := common.NewPipelineJob(s)
+	p.Run()
 }
