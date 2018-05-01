@@ -18,6 +18,7 @@ const (
 )
 
 func main() {
+	logger := common.NewLogger()
 	config, err := common.NewConfigProvider()
 	if err != nil {
 		log.Fatalln(err)
@@ -44,7 +45,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	eventJob := common.NewPipelineJob(event)
+	eventJob := common.NewPipelineJob(event, logger)
 
 	runner := common.NewJobRunner()
 	runner.Run(eventJob)

@@ -14,9 +14,10 @@ import (
 )
 
 func newGetEventIdsStep(football common.FootballService) common.Step {
-	return common.Step(func(in <-chan interface{}, out chan interface{}) {
+	return common.Step(func(in <-chan interface{}, out chan interface{}, errc chan<- error) {
 		ids, _, err := football.ListEventIds(context.Background())
 		if err != nil {
+			errc <- err
 			return
 		}
 
@@ -27,32 +28,36 @@ func newGetEventIdsStep(football common.FootballService) common.Step {
 }
 
 func newGetEventStep(football common.FootballService, mapEvent eventMapper) common.StepHandler {
-	return func(in interface{}) (interface{}, error) {
+	return func(in interface{}, errc chan<- error) interface{} {
 		n, ok := in.(json.Number)
 		if !ok {
-			return nil, fmt.Errorf("invalid type for GetEventStep: %v", reflect.TypeOf(in))
+			errc <- fmt.Errorf("invalid type for GetEventStep: %v", reflect.TypeOf(in))
+			return nil
 		}
 
 		id, err := n.Int64()
 		if err != nil {
-			return nil, fmt.Errorf("failed conversion to int: %v", n)
+			errc <- fmt.Errorf("failed conversion to int: %v", n)
+			return nil
 		}
 
 		event, _, err := football.GetEvent(context.Background(), int(id))
 		if err != nil {
-			return nil, err
+			errc <- err
+			return nil
 		}
 		e, _ := mapEvent(event)
 
-		return e, nil
+		return e
 	}
 }
 
 func newGetMarketsStep(football common.FootballService, mapMarket marketMapper) common.StepHandler {
-	return func(in interface{}) (interface{}, error) {
+	return func(in interface{}, errc chan<- error) interface{} {
 		event, ok := in.(*store.Event)
 		if !ok {
-			return nil, fmt.Errorf("invalid type for GetMarketsStep: %v", reflect.TypeOf(in))
+			errc <- fmt.Errorf("invalid type for GetMarketsStep: %v", reflect.TypeOf(in))
+			return nil
 		}
 
 		m := make(chan *feed.Market)
@@ -60,15 +65,18 @@ func newGetMarketsStep(football common.FootballService, mapMarket marketMapper) 
 		for _, i := range event.Markets {
 			n, err := strconv.Atoi(i.ID)
 			if err != nil {
+				errc <- fmt.Errorf("failed conversion to int: %v", n)
 				continue
 			}
 			wg.Add(1)
 			go func(id int) {
 				defer wg.Done()
 				market, _, err := football.GetMarket(context.Background(), id)
-				if err == nil {
-					m <- market
+				if err != nil {
+					errc <- err
+					return
 				}
+				m <- market
 			}(n)
 		}
 		go func() {
@@ -83,23 +91,24 @@ func newGetMarketsStep(football common.FootballService, mapMarket marketMapper) 
 		}
 		event.Markets = markets
 
-		return event, nil
+		return event
 	}
 }
 
 func newStoreSendStep(eventStore common.StoreService) common.StepHandler {
-	return func(in interface{}) (interface{}, error) {
+	return func(in interface{}, errc chan<- error) interface{} {
 		event, ok := in.(*store.Event)
 		if !ok {
-			return nil, fmt.Errorf("invalid type for StoreSendStep: %v", reflect.TypeOf(in))
+			errc <- fmt.Errorf("invalid type for StoreSendStep: %v", reflect.TypeOf(in))
+			return nil
 		}
 
 		_, err := eventStore.Create(context.Background(), event)
 		if err != nil {
-			return nil, err
+			errc <- err
 		}
 
-		return nil, nil
+		return nil
 	}
 }
 

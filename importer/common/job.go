@@ -14,7 +14,7 @@ type JobRunner interface {
 type SequentialJobRunner struct{}
 
 // Run will execute the jobs sequentially
-func (r *SequentialJobRunner) Run(jobs ...Job) {
+func (r SequentialJobRunner) Run(jobs ...Job) {
 	for _, j := range jobs {
 		j.Run()
 	}

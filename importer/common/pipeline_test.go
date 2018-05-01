@@ -12,7 +12,7 @@ func TestPipeline(t *testing.T) {
 	mult2 := multiplier(2)
 
 	pipeline := NewSteps(add3, mult2)
-	out := pipeline.Run(input)
+	out, _ := pipeline.Run(input)
 
 	go func() {
 		for _, i := range []int{1, 2, 3} {
@@ -38,7 +38,7 @@ func TestPipeline(t *testing.T) {
 }
 
 func adder(x int) Step {
-	return Step(func(in <-chan interface{}, out chan interface{}) {
+	return Step(func(in <-chan interface{}, out chan interface{}, errc <-chan error) {
 		for m := range in {
 			n := m.(int)
 			out <- (int(n) + x)
@@ -47,7 +47,7 @@ func adder(x int) Step {
 }
 
 func multiplier(x int) Step {
-	return Step(func(in <-chan interface{}, out chan interface{}) {
+	return Step(func(in <-chan interface{}, out chan interface{}, errc <-chan error) {
 		for m := range in {
 			n := m.(int)
 			out <- (int(n) * x)
