@@ -104,17 +104,22 @@ func newStoreSendStep(eventStore common.StoreService) common.StepHandler {
 }
 
 // NewPipeline creates a new pipeline for events
-func NewPipeline(football common.FootballService, store common.StoreService) *common.Steps {
+func NewPipeline(config common.ConfigProvider, football common.FootballService, store common.StoreService) (*common.Steps, error) {
+	t, err := config.GetInt("jobs.event.steps.limit")
+	if err != nil {
+		return nil, err
+	}
+
 	eventMapper := newEventMapper(parseEventTime)
 	optionMapper := newOptionMapper(parseOdds)
 	marketMapper := newMarketMapper(optionMapper)
 
 	steps := []common.StepRunner{
 		newGetEventIdsStep(football),
-		common.NewRateLimitedStep(newGetEventStep(football, eventMapper), 10),
-		common.NewRateLimitedStep(newGetMarketsStep(football, marketMapper), 10),
-		common.NewRateLimitedStep(newStoreSendStep(store), 10),
+		common.NewRateLimitedStep(newGetEventStep(football, eventMapper), t),
+		common.NewRateLimitedStep(newGetMarketsStep(football, marketMapper), t),
+		common.NewRateLimitedStep(newStoreSendStep(store), t),
 	}
 	pipeline := common.NewSteps(steps...)
-	return &pipeline
+	return &pipeline, nil
 }
