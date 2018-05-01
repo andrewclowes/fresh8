@@ -1,0 +1,6 @@
+services.client.timeout: 10
+services.client.football.host: localhost:8000
+
+jobs.event.getevent.limit: 10
+jobs.event.getmarkets.limit: 10
+jobs.event.storesend.limit: 10
