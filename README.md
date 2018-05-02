@@ -28,6 +28,6 @@ The importer project contains a config.yml file which contains the following set
 | Setting                         | Default     |
 |---------------------------------|-------------|
 | `services.client.timeout`       | `10`        |
-| `services.client.football.host` | `localhost` |
-| `services.client.football.port` | `8000`      |
+| `services.client.feed.host`     | `localhost` |
+| `services.client.feed.port`     | `8000`      |
 | `jobs.event.steps.limit`        | `10`        |

@@ -46,7 +46,12 @@ func newGetEventStep(football common.FootballEventService, mapEvent eventMapper)
 			errc <- err
 			return nil
 		}
-		e, _ := mapEvent(event)
+
+		e, err := mapEvent(event)
+		if err != nil {
+			errc <- err
+			return nil
+		}
 
 		return e
 	}
@@ -86,7 +91,11 @@ func newGetMarketsStep(football common.FootballMarketService, mapMarket marketMa
 
 		markets := []store.Market{}
 		for market := range m {
-			n, _ := mapMarket(market)
+			n, err := mapMarket(market)
+			if err != nil {
+				errc <- err
+				continue
+			}
 			markets = append(markets, *n)
 		}
 		event.Markets = markets

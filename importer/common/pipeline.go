@@ -43,7 +43,7 @@ func NewConcurrentStep(handler StepHandler) StepRunner {
 
 // Run takes an input channel, and a series of operators, and uses the output
 // of each successive operator as the input for the next
-func (s ConcurrentStep) Run(in <-chan interface{}, errc chan<- error) chan interface{} {
+func (s *ConcurrentStep) Run(in <-chan interface{}, errc chan<- error) chan interface{} {
 	out := make(chan interface{})
 	go func() {
 		var wg sync.WaitGroup

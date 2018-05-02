@@ -52,11 +52,11 @@ func main() {
 }
 
 func createFeedClient(config common.ConfigProvider, client *http.Client) (*feed.Client, error) {
-	h, err := config.Get("services.client.football.host")
+	h, err := config.Get("services.client.feed.host")
 	if err != nil {
 		return nil, err
 	}
-	p, err := config.Get("services.client.football.port")
+	p, err := config.Get("services.client.feed.port")
 	if err != nil {
 		return nil, err
 	}
