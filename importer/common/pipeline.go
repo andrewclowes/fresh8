@@ -139,7 +139,7 @@ func NewPipelineJob(steps *Steps, logger Logger) Job {
 	return job
 }
 
-// Run starts the job and will wait untilall steps to finish
+// Run starts the job and will wait until all steps to finish
 // before returning
 func (j *PipelineJob) Run() {
 	out, errc := j.steps.Run(nil)
